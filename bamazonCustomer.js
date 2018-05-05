@@ -66,19 +66,39 @@ function listProducts() {
           processAnswers(answers);
         })
       };
+
+      function updateDB(answers){
+          let newStock = res[answers.id-1].stock_quantity - answers.quantity
+        connection.query(
+            "UPDATE products SET ? WHERE ?",
+            [
+              {
+                stock_quantity: newStock
+              },
+              {
+                item_id: answers.id
+              }
+            ],
+
+        )};
+
       function processAnswers(answers){
         // this is what happens after the user answers both questions
         console.log("processing answers...");
         console.log("You selected Item ID " + answers.id)
-       console.log("You selected quantity " + answers.quantity)
-       console.log("This ITEM ID corresponds to " + res[answers.id-1].product_name)
-       console.log("This item costs " + res[answers.id-1].price + " per unit and there are " + res[answers.id-1].stock_quantity)
-       console.log("The overall price of this order is " + (answers.quantity*res[answers.id-1].price).toFixed(2));
+        console.log("You selected quantity " + answers.quantity)
+        console.log("This ITEM ID corresponds to " + res[answers.id-1].product_name)
+        console.log("This item costs " + res[answers.id-1].price + " per unit and there are " + res[answers.id-1].stock_quantity)
+        console.log("The overall price of this order is " + (answers.quantity*res[answers.id-1].price).toFixed(2));
+
+        if (answers.quantity > res[answers.id-1].stock_quantity) {
+            console.log("But the amount you ordered is more than what we have in stock")
+        } else {
+            updateDB(answers);
+        }
       }
       ask();
-      connection.end();
+      //connection.end();
     });
 
-// verify that the amount that the user is asking is less than or equal to the amount in the DB
-// IF it's over, tell them they asked for too many
-// IF it's equal or under, update the stock_quantity and then tell them how much their order will be
+}
