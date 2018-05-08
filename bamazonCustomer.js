@@ -93,12 +93,14 @@ function listProducts() {
 
         if (answers.quantity > res[answers.id-1].stock_quantity) {
             console.log("But the amount you ordered is more than what we have in stock")
+            connection.end();
         } else {
             updateDB(answers);
+            connection.end();
         }
       }
       ask();
-      //connection.end();
+
     });
 
 }
